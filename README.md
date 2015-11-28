@@ -116,29 +116,31 @@ The default output might look something like this (pretty-printed):
 
 ## Using with Ansible
 
-In order to use the `gce-inventory` to generate a dynamic inventory, you'll need an executable script. One way is to create an `inventory` directory under your ansible project root directory, then place a shell script inside of it:
+In order to use the `gce-inventory` command with ansible, you must create an executable shell script somewhere within your project and pass that script to the ansible command line.
 
-
+For example, create an `inventory` directory under your project and a new shell script:
 ```
 ├<ansible-root>
 | └─ inventory
-|    └─ gce-inventory.sh
+|    └─ gce.sh
 ```
 
-The content of the shell script is simple, it needs to forward all parameters to the `gce-inventory` command line.
-
+The content of `gce.sh` is simple; it forwards all parameters to the installed `gce-inventory` command:
 **inventory/gce-inventory.sh**
 ```bash
 #!/bin/sh
 
 gce-inventory $@
 ```
-** Remember to make the script executable! **
+**Remember to make the script executable!**
 
-After you've got the script set up, run the ansible etup module and make sure you're getting the details back for the machines in your inventory:
+After you've got the script set up, run the ansible's setup module against all machines in your inventory:
+
 ```bash
 ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m setup
 ```
+
+NOTE: You also must supply [required options prior to running this command](user_content_required_options).
 
 ## Hostvars
 
