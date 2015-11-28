@@ -1,8 +1,8 @@
 ---
 
 projectId: ll-dev
-#keyFileName: /home/phillip/LL-SAND-f14afeeb37a5.json
-keyFileName: /home/phillip/LL-DEV-eb3980327059.json
+#keyFileName: /home/phillip/LL-SAND-xxxxxxxx.json
+keyFileName: /home/phillip/LL-DEV-xxxxxxxx.json
 
 # Limits the zones that are queried.
 zones:

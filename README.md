@@ -304,4 +304,4 @@ DEBUG=gce* gce-inventory --list
 
 ## License
 
-This software is covered by the accompanying [MIT style license]().
+This software is covered by the accompanying [MIT style license](https://github.com/LeisureLink/gce-inventory/blob/master/LICENSE.txt).
