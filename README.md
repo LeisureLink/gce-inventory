@@ -30,7 +30,7 @@ The `gce-inventory` command line must be able to find an options file in order t
 
 The minimal options file must be formatted as valid YAML data:
 
-** `.gce-options` **
+**`.gce-options`:**
 ```yaml
 ---
 projectId: test
@@ -126,7 +126,7 @@ For example, create an `inventory` directory under your project and a new shell 
 ```
 
 The content of `gce.sh` is simple; it forwards all parameters to the installed `gce-inventory` command:
-**inventory/gce-inventory.sh**
+**inventory/gce.sh:**
 ```bash
 #!/bin/sh
 
@@ -134,13 +134,22 @@ gce-inventory $@
 ```
 **Remember to make the script executable!**
 
-After you've got the script set up, run the ansible's setup module against all machines in your inventory:
+After you've got the script set up, run ansible's `setup` module:
 
 ```bash
 ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m setup
 ```
+`--private-key=~/.ssh/google_compute_engine` refers to my ssh key authorized for the machines in my inventory. You'll probably have to modify that part of the command.
 
-NOTE: You also must supply [required options prior to running this command](#user-content-required-options).
+`--become` tells ansible to `sudo` when executing commands on the hosts.
+
+`all` tells ansible which hosts to run the module on.
+
+`-i inventory` tells ansible to use the inventory located in the `inventory` directory that we created above. You may also refer to the script directly, such as `-i inventory/gce.sh`.
+
+`-m setup` tells ansible to run the `setup` module on each host. Ansible's `setup` module interrogates the host and constructs lots of useful host variables; it is a good module to use to see if things are working right.
+
+NOTE: You also must supply [required options when running this command](#user-content-required-options).
 
 ## Hostvars
 
