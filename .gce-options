@@ -1,0 +1,64 @@
+---
+
+projectId: ll-dev
+#keyFileName: /home/phillip/LL-SAND-f14afeeb37a5.json
+keyFileName: /home/phillip/LL-DEV-eb3980327059.json
+
+# Limits the zones that are queried.
+zones:
+  - us-central1-a
+  - us-central1-b
+  - us-central1-c
+  - us-central1-f
+
+# Specifies how hostvars are composed
+#   the JSON Pointers are relative to the source data
+hostvars:
+# implicit hostvars (don't need defining)
+# - name
+# - zone:
+#   captureRe: '[^/]+(?=/$|$)'
+# - ansible_ssh_host: !!calculated - see below!!
+  - status:
+    # transforms the source value to lowercase
+    transform: lowercase
+  - network: /networkInterfaces/0/network
+    # performs a regex capture against source value
+    captureRe: '[^/]+(?=/$|$)'
+  - internalIP: /networkInterfaces/0/networkIP
+  - externalIP: /networkInterfaces/0/accessConfigs/0/natIP
+  - tags: /tags/items
+  - metadata: /metadata/items
+    # transforms key value pairs to object properties
+    transform: objectFromKeyValues
+  - machine_type: /machineType
+    # performs a regex capture against source value
+    captureRe: '[^/]+(?=/$|$)'
+
+# Materializes groups in the output;
+#   properties must be defined in hostvars.
+groups:
+  - zone
+  - network:
+    # prepends each network
+    prepend: network-
+  - machine_type
+  - tags:
+    # prepends each tag
+    prepend: 'tag-'
+  - status:
+    # prepends each status
+    prepend: 'status-'
+
+
+# Established after hostvars are calculated;
+#  the JSON Pointer is hostvars relative.
+ansible_ssh_host: /externalIP
+# ansible_ssh_host: /internalIP
+
+# Orders the output.
+order:
+  - zone
+  - tags
+  - machine_type
+  - status

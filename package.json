@@ -1,0 +1,38 @@
+{
+  "name": "gce-inventory",
+  "version": "0.1.0",
+  "description": "A flexible module for creating Ansible dynamic inventories from Google Compute Engine resources.",
+  "main": "index.js",
+  "preferGlobal": true,
+  "bin": {
+    "gce-inventory": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com:LeisureLink/gce-inventory.git"
+  },
+  "keywords": [
+    "gce",
+    "gcloud",
+    "Google Compute Engine",
+    "Google Cloud"
+  ],
+  "author": "Phillip Clark <pclark@leisurelink.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/LeisureLink/gce-inventory/issues"
+  },
+  "homepage": "https://github.com/LeisureLink/gce-inventory#readme",
+  "dependencies": {
+    "assert-plus": "^0.2.0",
+    "colors": "^1.1.2",
+    "commander": "^2.9.0",
+    "debug": "^2.2.0",
+    "es6-promisify": "^3.0.0",
+    "foldero": "^0.1.1",
+    "gcloud": "^0.25.0",
+    "js-yaml": "^3.4.4",
+    "json-ptr": "^0.2.0",
+    "lodash": "^3.10.1"
+  }
+}
