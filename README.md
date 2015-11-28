@@ -140,7 +140,7 @@ After you've got the script set up, run the ansible's setup module against all m
 ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m setup
 ```
 
-NOTE: You also must supply [required options prior to running this command](user_content_required_options).
+NOTE: You also must supply [required options prior to running this command](#user_content_required_options).
 
 ## Hostvars
 
