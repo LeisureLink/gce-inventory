@@ -11,11 +11,6 @@ zones:
   - us-central1-c
   - us-central1-f
 
-group_vars:
-  tag-auto-scale:
-    ansible_ssh_user: core
-    ansible_python_interpreter: "PATH=/home/core/bin:$PATH python"
-
 # Specifies how hostvars are composed
 #   the JSON Pointers are relative to the source data
 hostvars:
@@ -55,13 +50,17 @@ groups:
     # prepends each status
     prepend: 'status-'
 
+group_vars:
+  tag-coreos:
+    ansible_ssh_user: core
+    ansible_python_interpreter: "PATH=/home/core/bin:$PATH python"
 
 # Established after hostvars are calculated;
 #  the JSON Pointer is hostvars relative.
 ansible_ssh_host: /externalIP
 # ansible_ssh_host: /internalIP
 
-# Orders the output.
+# A simple order-by mechanism.
 order:
   - zone
   - tags

@@ -2,6 +2,10 @@
 
 A flexible module for creating Ansible dynamic inventories from Google Compute Engine resources.
 
+## Change Log
+
+`0.1.0` 2015-11-28 - published initial npm package.
+
 ## Rationale
 
 Since we operate an environment that spans multiple clouds (GCE, AWS, Rackspace) we wanted to be able to dictate the composition of `hostvars` and `groups` when generating our dynamic inventories. Doing so greatly reduces the overhead maintaining our Ansible plays because we have reduced the coupling with the specific cloud provider.
@@ -89,6 +93,7 @@ For example, create a new shell script and place it in the `inventory` directory
 ```
 
 `gce.sh`'s is simple; it forwards all parameters to the installed `gce-inventory` command:
+
 **inventory/gce.sh:**
 ```bash
 #!/bin/sh
@@ -299,12 +304,135 @@ The output produced by these options might look something like this (pretty-prin
 
 Now that's more interesting output!
 
+### Normalizing Group Names
+
+If you work with multiple cloud providers, you may want more control over group names. For instance the group names in the above output are GCE specific. There are a couple of ways you can control/transform the group names in the output:
+
+1) Specify a transform when constructing the `hostvars`,
+2) Specify a transform when materializing the `groups`.
+
+Here is an example that transforms `hostvars` using a `transform-descriptor`:
+
+```yaml
+---
+projectId: test
+keyFileName: /home/myname/TEST-xxxxxxxxxx.json
+
+hostvars:
+  - status:
+    transform: lowercase
+
+```
+
+Now the group names will reflect the lower case status (elided):
+```json
+{
+  "...": "...",
+  "running": [
+    "gc-app-server-member-jorf",
+    "gc-app-server-member-ml53",
+    "gc-app-server-member-mm7n",
+    "gc-cd-master-00",
+    "gc-ctrl-server-00",
+    "gc-ctrl-server-01",
+    "gc-ctrl-server-02",
+    "gc-hafs-server-00",
+    "gc-hafs-server-02",
+    "gc-hafs-server-03"
+  ],
+  "terminated": [
+    "gc-hafs-server-01"
+  ]
+}
+```
+
+We can go further and add some more meaningful info to the group name:
+
+```yaml
+---
+projectId: test
+keyFileName: /home/myname/TEST-xxxxxxxxxx.json
+
+hostvars:
+  - status:
+    transform: lowercase
+
+groups:
+  - status:
+    prepend: 'status-'
+```
+
+Now the group names are pretty explicit about their purpose/meaning (elided):
+```json
+{
+  "...": "...",
+  "status-running": [
+    "gc-app-server-member-jorf",
+    "gc-app-server-member-ml53",
+    "gc-app-server-member-mm7n",
+    "gc-cd-master-00",
+    "gc-ctrl-server-00",
+    "gc-ctrl-server-01",
+    "gc-ctrl-server-02",
+    "gc-hafs-server-00",
+    "gc-hafs-server-02",
+    "gc-hafs-server-03"
+  ],
+  "status-terminated": [
+    "gc-hafs-server-01"
+  ]
+}
+```
+
+### Group Vars
+
+There are times when you'll need to set variables on a whole group of hosts. To accomplish this, use `group_vars` in your options file.
+
+The following options file uses `hostvars` to get the host's tags, uses `groups` to group on tags, and adds `group_vars` to the `tag-coreos` group:
+
+```yaml
+---
+projectId: test
+keyFileName: /home/myname/TEST-xxxxxxxxxx.json
+
+hostvars:
+  - tags: /tags/items
+
+groups:
+  - tags:
+    prepend: 'tag-'
+
+group_vars:
+  tag-coreos:
+    ansible_ssh_user: core
+    ansible_python_interpreter: "PATH=/home/core/bin:$PATH python"
+
+```
+
+Provided we have our CoreOS boxes tagged with *coreos*, we now have a way to indicate some CoreOS specific stuff for ansible.
+
+We use this particular strategy; you can find more info about using ansible with CoreOS [on the CoreOS blog](https://coreos.com/blog/managing-coreos-with-ansible/) and [in this handy github repo](https://github.com/defunctzombie/ansible-coreos-bootstrap).
+
 ## Debug Mode
 
-Running `gce-inventory` in debug mode can help troubleshoot the options and the processing pipeline. It also enables you to see the raw JSON structure returned from the google API and can help you compose your JSON Pointers.
+Running `gce-inventory` in debug mode can help troubleshoot the options and the processing pipeline. It also enables you to see the raw JSON structure returned from the google API and can help you compose your JSON Pointers and transforms.
 
 ```bash
 DEBUG=gce* gce-inventory --list
+```
+
+### Also Useful
+
+`gce-inventory` doesn't pretty print the JSON that it outputs. You should install [a command line `json` tool](https://github.com/trentm/json):
+
+```bash
+npm install -g json
+```
+
+Then we simply pipe output to get it pretty printed:
+
+```bash
+DEBUG=gce* gce-inventory --list | json
 ```
 
 ## License
