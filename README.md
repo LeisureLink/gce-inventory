@@ -98,6 +98,7 @@ gce-inventory $@
 **Remember to make the script executable!**
 ```bash
 chmod +x inventory/gce.sh
+```
 
 After you've got the script ready, run ansible's `setup` module:
 
