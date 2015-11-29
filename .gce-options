@@ -11,6 +11,11 @@ zones:
   - us-central1-c
   - us-central1-f
 
+group_vars:
+  coreos:
+    ansible_ssh_user: core
+    ansible_python_interpreter: "PATH=/home/core/bin:$PATH python"
+
 # Specifies how hostvars are composed
 #   the JSON Pointers are relative to the source data
 hostvars:

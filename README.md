@@ -6,7 +6,7 @@ A flexible module for creating Ansible dynamic inventories from Google Compute E
 
 Since we operate an environment that spans multiple clouds (GCE, AWS, Rackspace) we wanted to be able to dictate the composition of `hostvars` and `groups` when generating our dynamic inventories. Doing so greatly reduces the overhead maintaining our Ansible plays because we have reduced the coupling with the specific cloud provider.
 
-What do we mean by coupling? Ansible's `gce.py` module and its `ec2.py` module are both opinionated about both `hostvars` and `groups`. Notably, both of these markup the inventory in a way that is not meaningful to our automation; a prefix of `ec2_` and `gce_` on variables is cumbersome and requires unnecessary logic in our plays to normalize inventories spanning multiple clouds.
+What do we mean by coupling? Ansible's `gce.py` module and its `ec2.py` module are both opinionated about both `hostvars` and `groups`. Notably, both of these markup the inventory in a way that is not meaningful to our automation; a prefix of `ec2_` and `gce_` on variables is cumbersome and requires unnecessary logic in our plays deal with the prefixed variables.
 
 Our own approach enables us to declaritively compose `hostvars` and `groups` into just the information our automation cares about.
 
@@ -22,13 +22,15 @@ This module is written in node.js and uses node's ES6 features; you must have no
 npm install -g gce-inventory
 ```
 
-Once installed, you'll have a `gce-inventory` command available from the command line.
+Once installed, you'll have a `gce-inventory` command available on the machine.
 
 ## Required Options
 
-The `gce-inventory` command line must be able to find an options file in order to query the Google Compute Engine APIs. You can either set an environement variable `GCE_OPTIONS` to the full path of an options file, or place a file named `.gce-options` in your working directory.
+The `gce-inventory` command line must be able to find an options file in order to query the Google Compute Engine APIs. You can either set an environement variable `GCE_OPTIONS` to the file's full path, or name the file `.gce-options` and put it in your project's working directory or one of the parent directories.
 
-The minimal options file must be formatted as valid YAML data:
+Options files must be formatted as YAML.
+
+The minimal options file identifies your project and credentials:
 
 **`.gce-options`:**
 ```yaml
@@ -48,7 +50,7 @@ With the required options in place, you can run the inventory directly from a te
 gce-inventory --list
 ```
 
-The default output might look something like this (pretty-printed):
+The default output might look something like this (pretty-printed and elided):
 
 ```json
 {
@@ -64,46 +66,7 @@ The default output might look something like this (pretty-printed):
         "name": "gc-hafs-server-01",
         "ansible_ssh_host": "xx.xx.xx.xx"
       },
-      "gc-hafs-server-02": {
-        "zone": "us-central1-c",
-        "name": "gc-hafs-server-02",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-ctrl-server-01": {
-        "zone": "us-central1-b",
-        "name": "gc-ctrl-server-01",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-cd-master-00": {
-        "zone": "us-central1-f",
-        "name": "gc-cd-master-00",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-app-server-member-jorf": {
-        "zone": "us-central1-f",
-        "name": "gc-app-server-member-jorf",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-ctrl-server-00": {
-        "zone": "us-central1-f",
-        "name": "gc-ctrl-server-00",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-hafs-server-03": {
-        "zone": "us-central1-f",
-        "name": "gc-hafs-server-03",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-hafs-server-00": {
-        "zone": "us-central1-a",
-        "name": "gc-hafs-server-00",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
-      "gc-app-server-member-ml53": {
-        "zone": "us-central1-f",
-        "name": "gc-app-server-member-ml53",
-        "ansible_ssh_host": "xx.xx.xx.xx"
-      },
+      "...",
       "gc-app-server-member-mm7n": {
         "zone": "us-central1-f",
         "name": "gc-app-server-member-mm7n",
@@ -118,14 +81,14 @@ The default output might look something like this (pretty-printed):
 
 In order to use the `gce-inventory` command with ansible, you must create an executable shell script somewhere within your project and pass that script to the ansible command line.
 
-For example, create an `inventory` directory under your project and a new shell script:
+For example, create a new shell script and place it in the `inventory` directory under your project:
 ```
 ├<ansible-root>
 | └─ inventory
 |    └─ gce.sh
 ```
 
-The content of `gce.sh` is simple; it forwards all parameters to the installed `gce-inventory` command:
+`gce.sh`'s is simple; it forwards all parameters to the installed `gce-inventory` command:
 **inventory/gce.sh:**
 ```bash
 #!/bin/sh
@@ -133,8 +96,10 @@ The content of `gce.sh` is simple; it forwards all parameters to the installed `
 gce-inventory $@
 ```
 **Remember to make the script executable!**
+```bash
+chmod +x inventory/gce.sh
 
-After you've got the script set up, run ansible's `setup` module:
+After you've got the script ready, run ansible's `setup` module:
 
 ```bash
 ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m setup
@@ -145,9 +110,9 @@ ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m 
 
 `all` tells ansible which hosts to run the module on.
 
-`-i inventory` tells ansible to use the inventory located in the `inventory` directory that we created above. You may also refer to the script directly, such as `-i inventory/gce.sh`.
+`-i inventory` tells ansible to use the inventory located in the `inventory` directory. If you have other static or dynamic inventories in the `inventory` directory, those will be run too!  You may also refer to the script directly, such as `-i inventory/gce.sh`.
 
-`-m setup` tells ansible to run the `setup` module on each host. Ansible's `setup` module interrogates the host and constructs lots of useful host variables; it is a good module to use to see if things are working right.
+`-m setup` tells ansible to run the `setup` module. Ansible's `setup` module interrogates the host and constructs lots of useful host variables; it is a good module to use to see if things are working right.
 
 NOTE: You also must supply [required options when running this command](#user-content-required-options).
 
