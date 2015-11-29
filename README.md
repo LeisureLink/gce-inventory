@@ -308,8 +308,8 @@ Now that's more interesting output!
 
 If you work with multiple cloud providers, you may want more control over group names. For instance the group names in the above output are GCE specific. There are a couple of ways you can control/transform the group names in the output:
 
-1) Specify a transform when constructing the `hostvars`,
-2) Specify a transform when materializing the `groups`.
+* Specify a transform when constructing the `hostvars`,
+* Specify a transform when materializing the `groups`.
 
 Here is an example that transforms `hostvars` using a `transform-descriptor`:
 
