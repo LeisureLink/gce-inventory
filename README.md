@@ -105,6 +105,8 @@ After you've got the script ready, run ansible's `setup` module:
 ```bash
 ansible --private-key=~/.ssh/google_compute_engine --become all -i inventory -m setup
 ```
+For those of you not familiar with ansible's command line:
+
 `--private-key=~/.ssh/google_compute_engine` refers to my ssh key authorized for the machines in my inventory. You'll probably have to modify that part of the command.
 
 `--become` tells ansible to `sudo` when executing commands on the hosts.
