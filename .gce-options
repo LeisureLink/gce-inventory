@@ -12,7 +12,7 @@ zones:
   - us-central1-f
 
 group_vars:
-  coreos:
+  tag-auto-scale:
     ansible_ssh_user: core
     ansible_python_interpreter: "PATH=/home/core/bin:$PATH python"
 
