@@ -1,6 +1,6 @@
 {
   "name": "gce-inventory",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "A flexible module for creating Ansible dynamic inventories from Google Compute Engine resources.",
   "main": "index.js",
   "preferGlobal": true,
