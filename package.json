@@ -24,13 +24,13 @@
   },
   "homepage": "https://github.com/LeisureLink/gce-inventory#readme",
   "dependencies": {
+    "@google-cloud/compute": "^0.7.2",
     "assert-plus": "^0.2.0",
     "colors": "^1.1.2",
     "commander": "^2.9.0",
     "debug": "^2.2.0",
     "es6-promisify": "^3.0.0",
     "foldero": "^0.1.1",
-    "gcloud": "^0.25.0",
     "js-yaml": "^3.4.4",
     "json-ptr": "^0.2.0",
     "lodash": "^3.10.1"
