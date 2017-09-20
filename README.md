@@ -4,6 +4,8 @@ A flexible module for creating Ansible dynamic inventories from Google Compute E
 
 ## Change Log
 
+`0.2.0-additional-gcloud-zones` added more gcloud zones
+
 `v0.2.0` 2015-11-29 - added `group_vars` capability.
 
 v`0.1.0` 2015-11-28 - published initial npm package.
